@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+body {
+    background-color: #eee;
+}
+</style>
+
+<div class="container mt-5 mb-5">
+
+    <div class="d-flex justify-content-between mb-3"> <span>Company Employees List</span> <div class="mt-4 apointment"><button class="btn btn-success add" data-bs-toggle="modal" data-bs-target="#add_employee_modal">Add Employee <i class="fa-solid fa-plus"></i></button></div> </div>
+
+    <div class="row g-2">
+        {% for employee in employees %}
+        <div class="col-md-3">
+            <div class="card p-2 py-3 text-center">
+                <div class="img mb-2"> <img src="media/user-solid.svg" width="70" class="rounded-circle"> </div>
+                <h5 class="mb-0">{{ employee }}</h5> <small>Hired: {{ employee.hired_date }}</small>
+                <div class="ratings mt-2"> Active Tasks: {{ employee.active_tasks_count }}</div>
+                <div class="mt-4 apointment"> <a href="{% url 'todo_app:employee_detail' employee.id %}"><button class="btn btn-success text-uppercase">View Profile</button></a> </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- Add employee modal -->
+<div class="modal fade" id="add_employee_modal" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="AddModalLabel">Add Empolyee</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST">
+                {% csrf_token %}
+                  <div class="">
+                      {{ form }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                  </div>
+              </form>
+            </div>
+            </div>
+        </div>
+</div>
+
+{% endblock %}

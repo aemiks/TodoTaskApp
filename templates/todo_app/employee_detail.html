@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<link href="{% static 'css/employee.css' %}" rel="stylesheet" />
+
+
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between mb-3">
+        <div class="mt-4 apointment"><a href="{% url 'todo_app:home' %}"><button class="btn btn-success add"><i class="fa-solid fa-backward"></i> Employees List</button></a></div>
+        <div class="mt-4 apointment"><button class="btn btn-success add" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task <i class="fa-solid fa-plus"></i></button></div> </div>
+        <div class="mt-4">
+                <label for="startDate">filter tasks by date</label>
+                <input id="startDate" class="form-control" type="date" />
+                <span id="startDateSelected"></span>
+        </div>
+        <div class="container">
+            <div class="task">
+                <div class="task-header">
+                    <div class="task-header-cover"></div>
+                    <div class="task-header-content">
+                        <div class="task-header-img">
+                            <img src="../media/user-solid.svg"/>
+                        </div>
+                        <ul id="filterOptions" class="task-header-tab nav nav-tabs nav-tabs-v2">
+                            <li class="nav-item">
+                                <a href="?" id="all" class="nav-link active-task" data-toggle="tab" data-target="True">
+                                    <div class="nav-field">All Tasks</div>
+
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="?is_active=True" id="active-task" class="nav-link active-task" data-toggle="tab" data-target="True">
+                                    <div class="nav-field">Active Tasks</div>
+                                    <div class="nav-value">{{ employee.active_tasks_count }}</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="?is_active=False" class="nav-link finish-task" data-toggle="tab">
+                                    <div class="nav-field">Finished Tasks</div>
+                                    <div class="nav-value">{{ employee.finished_tasks_count }}</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="task-container">
+                    <div class="task-sidebar">
+                        <div class="desktop-sticky-top">
+                            <h4>{{ employee }}</h4>
+                            <div class="mb-1"><i class="fa fa-map-marker-alt fa-fw text-muted"></i> {{ employee.address }}, {{ employee.city }}</div>
+                            <div class="mb-3"><i class="fa fa-briefcase fa-fw text-muted"></i> With us since: {{ employee.hired_date }}</div>
+                            Export all tasks to CSV file: <a href="{% url 'todo_app:export_tasks_csv' employee.id %}"><i class="fa-solid fa-file-arrow-down fa-2x"></i></a>
+                            <hr class="mt-4 mb-4" />
+                        </div>
+                    </div>
+
+                    <div class="task-content">
+                        <div class="row">
+                            <div class="col-xl-12">
+                                </div>
+                                <div class="tab-content p-0">
+                                    {% for task in filter.qs %}
+                                    <div id="taskSection{{task.id}}" class="tab-panel page-content" data-filter="{{task.is_active}}">
+                                            <div class="list-group">
+                                                <div class="list-group-item d-flex align-items-center">
+                                                    <div class="flex-fill pl-3 pr-3">
+                                                        <div class="text-dark badge">{{ task.get_category_display }}</div>
+                                                        <div><span class="text-dark font-weight-600">{{ task.description }}</span></div>
+                                                        {% if task.timeleft_to_target.days > 0 %}
+                                                            <div class="text-muted fs-13px">Target date: {{ task.target_date }} (left: {{ task.timeleft_to_target.days }} days)</div>
+                                                        {% else %}
+                                                            <div class="text-muted fs-13px">Target date: {{ task.target_date }} (You are {{ task.timeleft_to_target.days }} days late!)</div>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if task.is_active %}
+                                                        <span class="text-success badge">Active</span>
+                                                        <button id="{{task.id}}" class="finish-task" data-bs-toggle="tooltip" data-bs-placement="top" title="Add to Finished Tasks"><i class="fa-solid fa-check"></i></button>
+                                                    {% else %}
+                                                        <span class="text-danger badge">Finished</span>
+                                                        <button id="{{task.id}}" class="reopen-task" data-bs-toggle="tooltip" data-bs-placement="top" title="Reopen Task"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+                                                    {% endif %}
+                                                    <button id="{{task.id}}" class="delete-task" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Task"><i class="fa-solid fa-trash-can"></i></button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<!-- Add Task modal -->
+<div class="modal" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="AddModalLabel">Add Task</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="resetModal()"></button>
+            </div>
+            <div class="modal-body">
+              <form id="addTask" method="POST">
+                {% csrf_token %}
+                    {{ form }}
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="resetModal()">Close</button>
+                    <button id="addTaskButton" value="submit" class="btn btn-primary">Add</button>
+                  </div>
+              </form>
+            </div>
+            </div>
+        </div>
+</div>
+
+<script>
+let startDate = document.getElementById('startDate')
+
+startDate.addEventListener('change',(e)=>{
+  let startDateVal = e.target.value
+  console.log("startDateVal"+startDateVal);
+  let params = new window.URLSearchParams(window.location.search);
+  console.log(JSON.stringify(params));
+  params.set('target_date', startDateVal);
+  console.log(params.toString());
+  let paramsURL = params.toString();
+  let urlToChange = "?" + paramsURL;
+  window.history.pushState({}, document.title, urlToChange );
+  location.reload()
+})
+
+</script>
+
+
+<script>
+function resetModal() {
+            document.getElementById("addTask").reset();
+        }
+</script>
+
+<script src="{% static 'js/app.js' %}"></script>
+
+
+
+{% endblock content %}

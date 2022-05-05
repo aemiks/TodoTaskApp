@@ -1,0 +1,84 @@
+---
+swagger: "2.0"
+info:
+  description: "_ToDoTaskApp assigment Task_ - web online version: https://todotaskapp.herokuapp.com/\n\n\n__Authentication__ \nThis is the public version API, authentication is unnecessary \n"
+  version: 1.0.0
+  title: ToDoTaskApp - Assigment Task
+  contact:
+    email: krzysztof.kutaa@gmail.com
+host: virtserver.swaggerhub.com
+basePath: /aemiks/ToDoTaskAssigment/1.0.0
+tags:
+- name: Public
+  description: Public open calls
+schemes:
+- https
+paths:
+  /today_tasks:
+    get:
+      tags:
+      - Public
+      summary: Retrives a list of all Employees and their tasks for today target_date
+      description: |
+        Today's date is automatically added to the backend, so there is no need to send parameters
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Employee'
+definitions:
+  Employee:
+    type: object
+    required:
+    - first_name
+    - last_name
+    properties:
+      first_name:
+        type: string
+        example: Anna
+      last_name:
+        type: string
+        example: Nowak
+      hired_date:
+        type: string
+        format: date-time
+        example: 2016-08-29T09:12:33.001Z
+      address:
+        type: string
+        example: Poznanska 1
+      city:
+        type: string
+        example: Poznan
+      tasks:
+        $ref: '#/definitions/Task'
+    description: |2+
+
+  Task:
+    type: object
+    required:
+    - description
+    - is_active
+    properties:
+      employee:
+        $ref: '#/definitions/Employee'
+      description:
+        type: string
+        example: Clean boss car
+      is_active:
+        type: boolean
+        default: true
+      category:
+        type: string
+      create_date:
+        type: string
+        format: date-time
+        example: 2022-05-04T09:12:33.001Z
+      target_date:
+        type: string
+        format: date-time
+        example: 2016-05-06T09:12:33.001Z
