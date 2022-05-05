@@ -14,7 +14,7 @@ tags:
 schemes:
 - https
 paths:
-  /today_tasks:
+  /api/today_tasks:
     get:
       tags:
       - Public
