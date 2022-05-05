@@ -39,7 +39,7 @@ Please download the appropriate environment and read the instructions for instal
 
 ```sh
 $ git clone https://github.com/aemiks/TodoTaskApp.git
-$ cd todoapp_assigment
+$ cd todotaskapp
 $ docker-compose up --build
 ```
 
