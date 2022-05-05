@@ -12,7 +12,7 @@
 
 ## Swagger
 
-Check API docs on Swagger here:
+Check API docs on Swagger here: https://aemiks.github.io/TodoTaskApp/
 
 
 ## Endpoint list  
