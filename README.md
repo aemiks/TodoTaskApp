@@ -17,7 +17,7 @@ Check API docs on Swagger here: https://aemiks.github.io/TodoTaskApp/
 
 ## Endpoint list  
 
-    home/ - home view with all employees list
+    / - home view with all employees list
     emoloyee/<id> - employee details with all tasks
     api/today_tasks/ - API (check Swagger-docs)
 
