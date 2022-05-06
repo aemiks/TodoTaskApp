@@ -15,8 +15,9 @@ class EmployeeTodayTasksSerializer(serializers.ModelSerializer):
 
     def get_tasks(self, employee):
         """Filter Tasks qs to serializer, only tasks with today target_date
+            and only active tasks
         """
-        qs = Task.objects.filter(target_date=date.today(), employee=employee)
+        qs = Task.objects.filter(target_date=date.today(), is_active=True, employee=employee)
         serializer = TaskSerializer(instance=qs, many=True)
         return serializer.data
 
